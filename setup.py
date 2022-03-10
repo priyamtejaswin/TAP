@@ -27,7 +27,7 @@ research."
 LONG_DESCRIPTION = readme
 AUTHOR = "Facebook AI Research"
 LICENSE = license
-REQUIREMENTS = (reqs.strip().split("\n"),)
+# REQUIREMENTS = (reqs.strip().split("\n"),)
 
 ext_modules = [
     Extension(
@@ -50,7 +50,7 @@ class BuildExt(build_ext):
 if __name__ == "__main__":
     setuptools.setup(
         name=DISTNAME,
-        install_requires=REQUIREMENTS,
+        # install_requires=REQUIREMENTS,
         packages=setuptools.find_packages(),
         ext_modules=ext_modules,
         cmdclass={'build_ext': BuildExt},
