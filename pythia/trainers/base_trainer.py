@@ -56,10 +56,14 @@ class BaseTrainer:
 
         if self.local_rank is not None and training_parameters.distributed:
             if not torch.distributed.is_nccl_available():
-                raise RuntimeError(
-                    "Unable to initialize process group: NCCL is not available"
-                )
-            torch.distributed.init_process_group(backend="nccl")
+                # raise RuntimeError(
+                #     "Unable to initialize process group: NCCL is not available"
+                # )
+                torch.distributed.init_process_group(backend="gloo")
+                print("Unable to initialize process group with NCCL; using gloo...")
+            else:
+                torch.distributed.init_process_group(backend="nccl")
+                
             synchronize()
 
         if (
