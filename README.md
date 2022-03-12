@@ -1,3 +1,47 @@
+```python
+# To run eval.
+python tools/run.py --tasks vqa --datasets m4c_textvqa --model m4c_split --config configs/vqa/m4c_textvqa/tap_refine.yml --save_dir save/m4c_base_val --run_type val --resume_file save/finetuned/textvqa_tap_base_best.ckpt --evalai_inference true --verbose_dump true
+```
+
+```python
+# Modifications for pythia/trainers/base_trainer.py
+# to save all metadata info about the dataset.
+def predict_for_evalai(self, dataset_type):
+        reporter = self.dataset_loader.get_test_reporter(dataset_type)
+        with torch.no_grad():
+            self.model.eval()
+            message = "Starting {} inference for evalai".format(dataset_type)
+            self.writer.write(message)
+            count = 0
+            while reporter.next_dataset():
+                dataloader = reporter.get_dataloader()
+
+                for batch in tqdm(dataloader):
+                    count += 1
+                    prepared_batch = reporter.prepare_batch(batch)
+                    # model_output = self.model(prepared_batch)
+                    # report = Report(prepared_batch, model_output)
+                    # reporter.add_to_report(report)
+
+                    temp = OrderedDict()
+                    for k, v in prepared_batch.items():
+                        if isinstance(v, torch.Tensor):
+                            temp[k] = v.cpu().numpy()
+                        else:
+                            temp[k] = v
+                    with open(os.path.join(self.config.training_parameters.save_dir, 'meta_%s_%d.pkl'%(dataset_type, count)), 'wb') as fp:
+                        pickle.dump(temp, fp)
+
+            self.writer.write("Finished predicting")
+            self.writer.write("Final count: %d"%count)
+            
+            # self.writer.write("Saving metadata to disk at %s" %\
+            #      self.config.training_parameters.save_dir)
+            self.writer.write("Saved metadata to disk.")
+
+            self.model.train()
+```
+
 # TAP: Text-Aware Pre-training
 [TAP: Text-Aware Pre-training for Text-VQA and Text-Caption](https://arxiv.org/pdf/2012.04638.pdf)
 
@@ -27,18 +71,13 @@ For more details, please refer to our
     }
 
 ### Prerequisites
+* A Linux distro (*this has not been tested on any other OS*)
 * Python 3.6
-* Pytorch 1.4.0
-* Please refer to ``requirements.txt``. Or using
-
-  ```
-  python setup.py develop
-  ```
+* Conda (for package, env management) <https://www.anaconda.com/products/individual>
 
 ## Installation
 
 1. Clone the repository
-
     ```
     git clone https://github.com/microsoft/TAP.git
     cd TAP
