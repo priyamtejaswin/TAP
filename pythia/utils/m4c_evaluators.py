@@ -217,6 +217,12 @@ class EvalAIAnswerProcessor:
 
 
 class TextVQAAccuracyEvaluator:
+    """
+    Initialize: `evaluator = TextVQAAccuracyEvaluator()`
+    Collect predictions: `pred_list = [{'pred_answer': p, 'gt_answers': g for (p, g) in zip(preds, truths)}]
+    ## Remember, `g` should be a list of answers from humans.
+    Use: `evaluator.eval_pred_list(pred_list)`
+    """
     def __init__(self):
         self.answer_processor = EvalAIAnswerProcessor()
 
