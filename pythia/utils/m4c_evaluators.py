@@ -251,7 +251,7 @@ class TextVQAAccuracyEvaluator:
 
         return unique_answer_scores
 
-    def eval_pred_list(self, pred_list):
+    def eval_pred_list(self, pred_list, full=False):
         pred_scores = []
         for entry in pred_list:
             pred_answer = self.answer_processor(entry['pred_answer'])
@@ -262,7 +262,10 @@ class TextVQAAccuracyEvaluator:
             pred_scores.append(score)
 
         accuracy = sum(pred_scores) / len(pred_scores)
-        return accuracy
+        if full is False:
+            return accuracy
+        else:
+            return pred_scores
 
 
 class STVQAAccuracyEvaluator:
