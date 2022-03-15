@@ -1,8 +1,59 @@
+# TAP: Text-Aware Pre-training
+[TAP: Text-Aware Pre-training for Text-VQA and Text-Caption](https://arxiv.org/pdf/2012.04638.pdf)
+
+by [Zhengyuan Yang](https://zyang-ur.github.io/), [Yijuan Lu](https://scholar.google.com/citations?user=cpkrT44AAAAJ&hl=en), [Jianfeng Wang](https://scholar.google.com/citations?user=vJWEw_8AAAAJ&hl=en), [Xi Yin](https://xiyinmsu.github.io/), [Dinei Florencio](https://www.microsoft.com/en-us/research/people/dinei/), [Lijuan Wang](https://www.microsoft.com/en-us/research/people/lijuanw/), [Cha Zhang](https://www.microsoft.com/en-us/research/people/chazhang/), [Lei Zhang](https://www.microsoft.com/en-us/research/people/leizhang/), and [Jiebo Luo](http://cs.rochester.edu/u/jluo)
+
+IEEE Conference on Computer Vision and Pattern Recognition (CVPR), 2021, Oral
+
+
+### Introduction
+We propose Text-Aware Pre-training (TAP) for Text-VQA and Text-Caption tasks.
+For more details, please refer to our
+[paper](https://arxiv.org/pdf/2012.04638.pdf).
+
+<!-- Note: This codebase is still in beta release. We are continue organizing the repo and completing the doumentations. Meanwhile, please feel free to contact me regarding any issue and request for clarification. -->
+
+<p align="center">
+  <img src="http://www.cs.rochester.edu/u/zyang39/TAP/intro.jpg" width="75%"/>
+</p>
+
+### Citation
+
+    @inproceedings{yang2021tap,
+      title={TAP: Text-Aware Pre-training for Text-VQA and Text-Caption},
+      author={Yang, Zhengyuan and Lu, Yijuan and Wang, Jianfeng and Yin, Xi and Florencio, Dinei and Wang, Lijuan and Zhang, Cha and Zhang, Lei and Luo, Jiebo},
+      booktitle={CVPR},
+      year={2021}
+    }
+
+### Prerequisites
+* A Linux distro (*this has not been tested on any other OS*)
+* Python 3.6
+* Conda (for package, env management) <https://www.anaconda.com/products/individual>
+
+## Installation
+
+1. Create a new environment `py36tap` using the `environment.yml` file -- `conda env create --file environment.yml`
+2. Ensure your `pytorch` installation matches your GPU cuda version
+    * Cuda version can be checked using `nvidia-smi`
+    * Refer to <https://pytorch.org/get-started/previous-versions/> if your cuda version is not the latest. For cuda 10.1, the command is `pip install torch==1.8.1+cu101 torchvision==0.9.1+cu101 torchaudio==0.8.1 -f https://download.pytorch.org/whl/torch_stable.html`
+3. Clone the repository
+    ```
+    git clone https://github.com/priyamtejaswin/TAP.git
+    cd TAP
+    python setup.py develop
+    ```
+    * This will install a modified version of Pythia.
+4. Data
+    * Please refer to the Readme in the ``data`` folder. <!-- * Please refer to [AzCopy executable tools](https://docs.microsoft.com/en-us/azure/storage/common/storage-use-azcopy-v10#download-azcopy) for downloading data/models. -->
+
+## Single node evaluation script
 ```python
 # To run eval.
 python tools/run.py --tasks vqa --datasets m4c_textvqa --model m4c_split --config configs/vqa/m4c_textvqa/tap_refine.yml --save_dir save/m4c_base_val --run_type val --resume_file save/finetuned/textvqa_tap_base_best.ckpt --evalai_inference true --verbose_dump true
 ```
 
+## Changes to save all metadata (needs to be run once, before anything else)
 ```python
 # Modifications for pythia/trainers/base_trainer.py
 # to save all metadata info about the dataset.
@@ -42,55 +93,9 @@ def predict_for_evalai(self, dataset_type):
             self.model.train()
 ```
 
-# TAP: Text-Aware Pre-training
-[TAP: Text-Aware Pre-training for Text-VQA and Text-Caption](https://arxiv.org/pdf/2012.04638.pdf)
+## Training
+Train the model, run the code under main folder. 
 
-by [Zhengyuan Yang](https://zyang-ur.github.io/), [Yijuan Lu](https://scholar.google.com/citations?user=cpkrT44AAAAJ&hl=en), [Jianfeng Wang](https://scholar.google.com/citations?user=vJWEw_8AAAAJ&hl=en), [Xi Yin](https://xiyinmsu.github.io/), [Dinei Florencio](https://www.microsoft.com/en-us/research/people/dinei/), [Lijuan Wang](https://www.microsoft.com/en-us/research/people/lijuanw/), [Cha Zhang](https://www.microsoft.com/en-us/research/people/chazhang/), [Lei Zhang](https://www.microsoft.com/en-us/research/people/leizhang/), and [Jiebo Luo](http://cs.rochester.edu/u/jluo)
-
-IEEE Conference on Computer Vision and Pattern Recognition (CVPR), 2021, Oral
-
-
-### Introduction
-We propose Text-Aware Pre-training (TAP) for Text-VQA and Text-Caption tasks.
-For more details, please refer to our
-[paper](https://arxiv.org/pdf/2012.04638.pdf).
-
-<!-- Note: This codebase is still in beta release. We are continue organizing the repo and completing the doumentations. Meanwhile, please feel free to contact me regarding any issue and request for clarification. -->
-
-<p align="center">
-  <img src="http://www.cs.rochester.edu/u/zyang39/TAP/intro.jpg" width="75%"/>
-</p>
-
-### Citation
-
-    @inproceedings{yang2021tap,
-      title={TAP: Text-Aware Pre-training for Text-VQA and Text-Caption},
-      author={Yang, Zhengyuan and Lu, Yijuan and Wang, Jianfeng and Yin, Xi and Florencio, Dinei and Wang, Lijuan and Zhang, Cha and Zhang, Lei and Luo, Jiebo},
-      booktitle={CVPR},
-      year={2021}
-    }
-
-### Prerequisites
-* A Linux distro (*this has not been tested on any other OS*)
-* Python 3.6
-* Conda (for package, env management) <https://www.anaconda.com/products/individual>
-
-## Installation
-
-1. Clone the repository
-    ```
-    git clone https://github.com/microsoft/TAP.git
-    cd TAP
-    python setup.py develop
-    ```
-
-2. Data
-
-* Please refer to the Readme in the ``data`` folder.
-<!-- * Please refer to [AzCopy executable tools](https://docs.microsoft.com/en-us/azure/storage/common/storage-use-azcopy-v10#download-azcopy) for downloading data/models. -->
-
-### Training
-3. Train the model, run the code under main folder. 
 Using flag ``--pretrain`` to access the pre-training mode, otherwise the main QA/Captioning losses are used to optimize the model. Example yml files are in ``configs`` folder. Detailed configs are in [released models](https://github.com/microsoft/TAP/tree/main/data).
 
     Pre-training:
@@ -109,7 +114,9 @@ Using flag ``--pretrain`` to access the pre-training mode, otherwise the main QA
     python -m torch.distributed.launch --nproc_per_node 4 tools/run.py --tasks vqa --datasets m4c_textvqa --model m4c_split --seed 13 --config configs/vqa/m4c_textvqa/tap_refine.yml --save_dir save/m4c_split_refine_test --resume_file save/pretrained/textvqa_tap_base_pretrain.ckpt training_parameters.distributed True
     ```
 
-4. Evaluate the model, run the code under main folder. 
+##  Evaluate the model
+
+Run the code under main folder. 
 Set up val or test set by ``--run_type``.
 
     ```
@@ -119,7 +126,7 @@ Set up val or test set by ``--run_type``.
     python -m torch.distributed.launch --nproc_per_node 4 tools/run.py --tasks vqa --datasets m4c_textvqa --model m4c_split --config configs/vqa/m4c_textvqa/tap_refine.yml --save_dir save/m4c_split_refine_test --run_type val --resume_file save/finetuned/textvqa_tap_base_best.ckpt training_parameters.distributed True
     ```
 
-5. Captioning evaluation.
+## Captioning evaluation.
     ```
     python projects/M4C_Captioner/scripts/textcaps_eval.py --set val --pred_file YOUR_VAL_PREDICTION_FILE
     ```
