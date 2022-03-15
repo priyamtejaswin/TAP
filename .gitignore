@@ -26,3 +26,5 @@ eggs/
 *.so
 *-checkpoint.ipynb
 data
+sample_images
+debug_images
