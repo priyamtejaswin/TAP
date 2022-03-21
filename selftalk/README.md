@@ -1,5 +1,5 @@
 Instructions for `samples.json`:
-```
+```python
 import json
 with open('./samples.json', 'r') as fp:
     samples = json.loads(fp.read())
