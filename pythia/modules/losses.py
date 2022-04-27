@@ -499,6 +499,36 @@ class M4CDecodingBCEWithMaskLoss(nn.Module):
         loss = torch.sum(losses) / count
         return loss
 
+
+@registry.register_loss("m4c_decoding_bce_and_source")
+class M4CDecodingBCEAndSourceLoss(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.one = torch.Tensor([1.])
+
+    def forward(self, sample_list, model_output):
+        scores = model_output["scores"]
+        targets = sample_list["targets"]
+        loss_mask = sample_list["train_loss_mask"]
+        assert scores.dim() == 3 and loss_mask.dim() == 2
+
+        losses = F.binary_cross_entropy_with_logits(
+            scores, targets, reduction="none"
+        )
+        losses *= loss_mask.unsqueeze(-1)
+        count = torch.max(torch.sum(loss_mask), self.one.to(losses.device))
+        loss = torch.sum(losses) / count
+
+        ans_source = model_output["src"]
+        ans_target = sample_list["tag_source"]
+
+        srcl = F.binary_cross_entropy_with_logits(
+            ans_source, ans_target, reduction="mean"
+        )
+
+        alpha = 0.7
+        return loss * alpha + srcl * (1 - alpha)
+
 @registry.register_loss("pretrainonly_m4c_decoding_bce_with_mask")
 class pretrainonlyM4CDecodingBCEWithMaskLoss(nn.Module):
     def __init__(self):
@@ -577,6 +607,7 @@ class M4CDecodingPollutePretrainLoss(nn.Module):
     def forward(self, sample_list, model_output):
         scores = model_output["pollutecls_scores"]
         targets = sample_list["tag_pollute"].float()
+        # PRIYAM
 
         loss = F.binary_cross_entropy_with_logits(
             scores, targets, reduction="mean"
