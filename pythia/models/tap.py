@@ -52,6 +52,8 @@ class M4C(BaseModel):
         self.cls = BertLMPredictionHead(self.text_bert.embeddings.word_embeddings.weight)
         self.pollute_cls = PolluteLinear()
         self.overlap_cls = OverlapLinear()
+        ## Added source classifier.
+        self.source_cls = SourceLinear()
 
     def _build_txt_encoding(self):
         TEXT_BERT_HIDDEN_SIZE = 768
@@ -194,6 +196,11 @@ class M4C(BaseModel):
 
         # only keep scores in the forward pass results
         results = {"scores": fwd_results["scores"]}
+        # PRIYAM
+        # Use `mmt_dec_output` to act as a source classifier.
+        source_cls = self.source_cls(fwd_results['mmt_dec_output'][:,0])
+        results["src"] = source_cls
+        
         if self.pretrain:
             results["textcls_scores"] = fwd_results['textcls_scores']
             results["pollutecls_scores"] = fwd_results['pollutecls_scores']
@@ -323,6 +330,7 @@ class M4C(BaseModel):
         fwd_results['textcls_scores'] = textcls_scores
 
     def _forward_pollute_pretrain_output(self, sample_list, fwd_results):
+        # PRIYAM
         seq_output = fwd_results['mmt_dec_output'][:,0]
         pollutecls_scores = self.pollute_cls(seq_output)
         fwd_results['pollutecls_scores'] = pollutecls_scores
@@ -712,6 +720,20 @@ class OverlapLinear(nn.Module):
     def forward(self,x,y):
         fuse = torch.cat([x,y],-1)
         hidden_state = self.LayerNorm(gelu(self.dense(fuse)))
+        return self.decoder(hidden_state)
+
+class SourceLinear(nn.Module):
+    """
+    MLP to predict source of answer: OCR or VOCAB.
+    """
+    def __init__(self, input_size=768, hidden_size=512):
+        super(SourceLinear, self).__init__()
+        self.dense = nn.Linear(input_size, hidden_size)
+        self.LayerNorm = BertLayerNorm(hidden_size, eps=1e-12)
+        self.decoder = nn.Linear(hidden_size, 1)
+
+    def forward(self,x):
+        hidden_state = self.LayerNorm(gelu(self.dense(x)))
         return self.decoder(hidden_state)
 
 def gelu(x):
