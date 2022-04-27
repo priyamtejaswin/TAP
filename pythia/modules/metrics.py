@@ -614,6 +614,21 @@ class PreTrainContraAccuracy(BaseMetric):
         accuracy = (scores==targets).float().sum()/max(scores.shape[0],1)
         return accuracy
 
+@registry.register_metric("sourcepred_accuracy")
+class SourceAccuracy(BaseMetric):
+    """
+    Measure accuracy for predicting source of answer.
+    """
+    def __init__(self):
+        super().__init__("sourcepred_accuracy")
+
+    def calculate(self, sample_list, model_output, *args, **kwargs):
+        scores = model_output["src"]
+        targets = sample_list["tag_source"].float()
+        scores, targets = (torch.sigmoid(scores)>0.5).float(), (targets>0.5).float()
+        accuracy = (scores==targets).float().sum()/max(scores.shape[0],1)
+        return accuracy
+
 @registry.register_metric("positionpred_accuracy")
 class PreTrainRPPAccuracy(BaseMetric):
     def __init__(self):
