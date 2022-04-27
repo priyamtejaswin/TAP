@@ -49,9 +49,16 @@ For more details, please refer to our
 
 ## Single node evaluation script
 ```python
-# To run eval.
-python tools/run.py --tasks vqa --datasets m4c_textvqa --model m4c_split --config configs/vqa/m4c_textvqa/tap_refine.yml --save_dir save/m4c_base_val --run_type val --resume_file save/finetuned/textvqa_tap_base_best.ckpt --evalai_inference true --verbose_dump true
+python tools/run.py --tasks vqa --datasets m4c_textvqa --model m4c_split --config configs/vqa/m4c_textvqa/tap_refine.yml --save_dir save/m4c_base_val --run_type val --resume_file save/finetuned/textvqa_tap_base_best.ckpt --evalai_inference true --verbose_dump true --gpu 0
 ```
+
+## Fine-tuning with `source-prediction`
+1. Download the ground-truth data Train and Val jsons for TextVQA.
+2. Check the data generation commands in `commands.sh` to generate the `.npy` files with new training data.
+3. Copy the `.npy` files to `TAP/data/imdb/m4c_textvqa/` -- ensure the names match the names in `TAP/configs/vqa/m4c_textvqa/tap_ocrcc_sourceloss.yml`.
+4. Start fine-tuning using the fine-tuning command in `commands.sh`
+
+**Note**: The GPU device id is only passed via the `--gpu #number` command in the `commands.sh` file.  Setting `CUDA_VISIBLE_DEVICES` will not work.
 
 ## Changes to save all metadata (needs to be run once, before anything else)
 ```python
