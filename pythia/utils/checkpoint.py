@@ -117,14 +117,14 @@ class Checkpoint:
 
         if len(pretrained_mapping.items()) == 0:
             final_dict = new_dict
-            self.trainer.model.load_state_dict(final_dict)
-            if "optimizer" in ckpt:
-                self.trainer.optimizer.load_state_dict(ckpt["optimizer"])
-            else:
-                warnings.warn(
-                    "'optimizer' key is not present in the "
-                    "checkpoint asked to be loaded. Skipping."
-                )
+            self.trainer.model.load_state_dict(final_dict, strict=False)
+            # if "optimizer" in ckpt:
+            #     self.trainer.optimizer.load_state_dict(ckpt["optimizer"])
+            # else:
+            #     warnings.warn(
+            #         "'optimizer' key is not present in the "
+            #         "checkpoint asked to be loaded. Skipping."
+            #     )
 
             self.trainer.early_stopping.init_from_checkpoint(ckpt)
 
