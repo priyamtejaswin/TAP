@@ -68,6 +68,7 @@ def run():
     parser = flags.get_parser()
     args = parser.parse_args()
     os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
+    print("args.gpu", args.gpu)
     os.environ["CUDA_VISIBLE_DEVICES"] = args.gpu
     #os.environ['MASTER_ADDR'] = '127.0.0.1'
     os.environ['MASTER_PORT'] = args.MASTER_PORT
