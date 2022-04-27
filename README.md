@@ -6,7 +6,7 @@ by [Zhengyuan Yang](https://zyang-ur.github.io/), [Yijuan Lu](https://scholar.go
 IEEE Conference on Computer Vision and Pattern Recognition (CVPR), 2021, Oral
 
 
-### Introduction
+## Introduction
 We propose Text-Aware Pre-training (TAP) for Text-VQA and Text-Caption tasks.
 For more details, please refer to our
 [paper](https://arxiv.org/pdf/2012.04638.pdf).
