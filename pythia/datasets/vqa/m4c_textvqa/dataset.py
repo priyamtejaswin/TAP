@@ -91,6 +91,7 @@ class M4CTextVQADataset(TextVQADataset):
 
     def load_item(self, idx):
         sample_info = self.imdb[idx]
+        # PRIYAM
         sample_info = self.preprocess_sample_info(sample_info)
         current_sample = Sample()
 
@@ -276,6 +277,9 @@ class M4CTextVQADataset(TextVQADataset):
         else:
             sample.overlap = torch.tensor(-1)
             sample.overlap_obj, sample.overlap_ocr = torch.tensor(0), torch.tensor(0)
+        
+        # PRIYAM
+        sample.tag_source = torch.tensor([sample_info["src_tag"]])
         return sample
 
     def add_answer_info(self, sample_info, sample):
