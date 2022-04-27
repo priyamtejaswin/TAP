@@ -77,7 +77,7 @@ class EarlyStopping:
             else:
                 return False
         else:
-            self.checkpoint.save(iteration, update_best=False)
+            self.checkpoint.save(iteration, update_best=True)
 
         return False
 

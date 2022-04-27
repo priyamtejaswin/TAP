@@ -209,7 +209,7 @@ class Checkpoint:
             "git/diff": self.repo.git.diff("--no-prefix"),
         }
 
-    def save(self, iteration, update_best=False):
+    def save(self, iteration, update_best=True):
         # Only save in main process
         if not is_main_process():
             return
@@ -241,7 +241,7 @@ class Checkpoint:
         ckpt.update(git_metadata_dict)
 
         ## do not save intemediate models
-        # torch.save(ckpt, ckpt_filepath)
+        torch.save(ckpt, ckpt_filepath)
         print('intemediate model saving skipped. utiles/checkpoint, %d'%iteration)
 
         if update_best:
