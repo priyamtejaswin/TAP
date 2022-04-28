@@ -91,6 +91,7 @@ training_parameters:
     lr_steps:
     - 14000
     - 19000
+    - 27000
     lr_ratio: 0.1
     use_warmup: true
     warmup_factor: 0.2
