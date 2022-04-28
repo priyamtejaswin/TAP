@@ -526,8 +526,9 @@ class M4CDecodingBCEAndSourceLoss(nn.Module):
             ans_source, ans_target, reduction="mean"
         )
 
-        alpha = 0.7
-        return loss * alpha + srcl * (1 - alpha)
+        alpha = 0.5
+        # return loss * alpha + srcl * (1 - alpha)
+        return loss + srcl
 
 @registry.register_loss("pretrainonly_m4c_decoding_bce_with_mask")
 class pretrainonlyM4CDecodingBCEWithMaskLoss(nn.Module):
