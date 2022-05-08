@@ -530,6 +530,30 @@ class M4CDecodingBCEAndSourceLoss(nn.Module):
         # return loss * alpha + srcl * (1 - alpha)
         return loss + srcl
 
+@registry.register_loss("m4c_decoding_bce_and_region")
+class M4CDecodingBCEAndRegionLoss(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.one = torch.Tensor([1.])
+
+    def forward(self, sample_list, model_output):
+        scores = model_output["scores"]
+        targets = sample_list["targets"]
+        loss_mask = sample_list["train_loss_mask"]
+        assert scores.dim() == 3 and loss_mask.dim() == 2
+
+        losses = F.binary_cross_entropy_with_logits(
+            scores, targets, reduction="none"
+        )
+        losses *= loss_mask.unsqueeze(-1)
+        count = torch.max(torch.sum(loss_mask), self.one.to(losses.device))
+        loss = torch.sum(losses) / count
+
+        rloss = F.l1_loss(model_output['region'], torch.squeeze(sample_list['reg_box']), reduction='mean')
+
+        beta = 0.5
+        return beta * loss + (1 - beta) * rloss
+
 @registry.register_loss("pretrainonly_m4c_decoding_bce_with_mask")
 class pretrainonlyM4CDecodingBCEWithMaskLoss(nn.Module):
     def __init__(self):

@@ -54,6 +54,8 @@ class M4C(BaseModel):
         self.overlap_cls = OverlapLinear()
         ## Added source classifier.
         self.source_cls = SourceLinear()
+        ## Added region prediction.
+        self.region_pred = RegionPred()
 
     def _build_txt_encoding(self):
         TEXT_BERT_HIDDEN_SIZE = 768
@@ -200,6 +202,9 @@ class M4C(BaseModel):
         # Use `mmt_dec_output` to act as a source classifier.
         source_cls = self.source_cls(fwd_results['mmt_dec_output'][:,0])
         results["src"] = source_cls
+
+        region_pred = self.region_pred(fwd_results['mmt_dec_output'][:,0])
+        results['region'] = region_pred
         
         if self.pretrain:
             results["textcls_scores"] = fwd_results['textcls_scores']
@@ -735,6 +740,24 @@ class SourceLinear(nn.Module):
     def forward(self,x):
         hidden_state = self.LayerNorm(gelu(self.dense(x)))
         return self.decoder(hidden_state)
+
+class RegionPred(nn.Module):
+    """
+    MLP to predict region.
+    Logit should be 
+    """
+    def __init__(self, input_size=768, hidden_size=512):
+        super(RegionPred, self).__init__()
+        self.dense = nn.Linear(input_size, hidden_size)
+        self.LayerNorm = BertLayerNorm(hidden_size, eps=1e-12)
+        self.decoder = nn.Linear(hidden_size, 4)  # xmin, ymin, xmax, ymax
+
+    def forward(self,x):
+        hidden_state = self.LayerNorm(gelu(self.dense(x)))
+        return torch.sigmoid(self.decoder(hidden_state))
+        # Output must be sigmoid -- bbox coordinates are normalized.
+        # Order of activation is not clear -- check YOLOv3.
+        # GaussReLU + Sigmoid should work ...
 
 def gelu(x):
     return x * 0.5 * (1.0 + torch.erf(x / math.sqrt(2.0)))

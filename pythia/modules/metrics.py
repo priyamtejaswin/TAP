@@ -629,6 +629,18 @@ class SourceAccuracy(BaseMetric):
         accuracy = (scores==targets).float().sum()/max(scores.shape[0],1)
         return accuracy
 
+@registry.register_metric("regionpred_loss")
+class RegionPredLoss(BaseMetric):
+    """
+    Measure loss for region prediction task.
+    """
+    def __init__(self):
+        super().__init__("regionpred_loss")
+
+    def calculate(self, sample_list, model_output, *args, **kwargs):
+        diff = torch.absolute(model_output['region'] - torch.squeeze(sample_list['reg_box']))
+        return torch.mean(diff)
+
 @registry.register_metric("positionpred_accuracy")
 class PreTrainRPPAccuracy(BaseMetric):
     def __init__(self):

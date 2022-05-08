@@ -280,6 +280,7 @@ class M4CTextVQADataset(TextVQADataset):
         
         # PRIYAM
         sample.tag_source = torch.tensor([sample_info["src_tag"]])
+        sample.reg_box = torch.tensor([sample_info['reg_box']])
         return sample
 
     def add_answer_info(self, sample_info, sample):
