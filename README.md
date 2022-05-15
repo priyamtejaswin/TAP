@@ -46,6 +46,7 @@ For more details, please refer to our
     * This will install a modified version of Pythia.
 4. Data
     * Please refer to the Readme in the ``data`` folder. <!-- * Please refer to [AzCopy executable tools](https://docs.microsoft.com/en-us/azure/storage/common/storage-use-azcopy-v10#download-azcopy) for downloading data/models. -->
+    * Checkpoint for TAP *without* pre-training and with the Region Prediciton loss -- <https://drive.google.com/file/d/1cZ70RH8N-zJdtMoS58v1LkHJc9E9eJBE/view?usp=sharing>
 
 ## Single node evaluation script
 ```python
